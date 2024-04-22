@@ -21,6 +21,10 @@ const PostSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
+  published: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 PostSchema.virtual("url").get(function () {

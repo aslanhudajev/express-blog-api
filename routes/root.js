@@ -4,8 +4,10 @@ import dashboardRouter from "./dashboard.js";
 import profileRouter from "./profile.js";
 const router = express.Router();
 
-router.use("/api/blog", blogRouter);
-router.use("/api/profile", profileRouter);
-router.use("/api/dashboard", dashboardRouter);
+router.use("/blog", blogRouter);
+//decreased scope: only making one user.
+//might make it into a 'medium' clone at a later date.
+//router.use("/api/profile", profileRouter);
+router.use("/dashboard", dashboardRouter);
 
 export default router;

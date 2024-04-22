@@ -6,7 +6,7 @@ const CommentSchema = new Schema({
     type: String,
     maxLength: 512,
   },
-  user: Schema.ObjectId,
+  post: Schema.ObjectId,
 });
 
 export default mongoose.model("Comment", CommentSchema);

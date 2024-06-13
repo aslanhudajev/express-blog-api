@@ -1,31 +1,54 @@
 import express from "express";
+import passport from "passport";
 import * as dashboardController from "../controllers/dashboard.js";
 const router = express.Router();
 
 //Authentication
-router.post("/signin");
+router.post("/signin", dashboardController.signin);
 router.post("/signout");
 
 //POSTS
 ///Create
 router.post(
   "/new-post",
-  //dashboardController.validatePostBody,
+  passport.authenticate("jwt", { session: false }),
+  dashboardController.validatePostBody,
   dashboardController.createPost,
 );
 
 //Read
-router.get("/posts", dashboardController.getPosts);
-router.get("/post/:postId", dashboardController.getPost);
+router.get(
+  "/authenticate",
+  passport.authenticate("jwt", { session: false }),
+  (req, res, next) => {
+    res.status(200);
+    res.send({ success: true });
+  },
+);
+router.get(
+  "/posts",
+  passport.authenticate("jwt", { session: false }),
+  dashboardController.getPosts,
+);
+router.get(
+  "/post/:postId",
+  passport.authenticate("jwt", { session: false }),
+  dashboardController.getPost,
+);
 
 //Update
 router.post(
   "/edit/:postId",
-  //dashboardController.validatePostBody,
+  passport.authenticate("jwt", { session: false }),
+  dashboardController.validatePostBody,
   dashboardController.editPost,
 );
 
 //Delete
-router.post("/delete/:postId", dashboardController.deletePost);
+router.post(
+  "/delete/:postId",
+  passport.authenticate("jwt", { session: false }),
+  dashboardController.deletePost,
+);
 
 export default router;

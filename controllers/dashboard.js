@@ -1,15 +1,51 @@
 import asyncHandler from "express-async-handler";
 import { body, validationResult } from "express-validator";
+import "dotenv/config.js";
+import jwt from "jsonwebtoken";
 import Post from "../models/post.js";
+import User from "../models/user.js";
 
-export const signin = asyncHandler(async (req, res, next) => {});
+export const signin = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ username: req.body.username });
+
+  if (!user) {
+    res.status(400);
+    return res.send({
+      success: false,
+      message: "Username or password incorrect",
+    });
+  }
+
+  //!TODO Implement bcrypt hash to passwords
+  if (user.password !== req.body.password) {
+    res.status(400);
+    return res.send({
+      success: false,
+      message: "Username or password incorrect",
+    });
+  }
+
+  const payload = {
+    username: user.username,
+    id: user.id,
+  };
+
+  const token = jwt.sign(payload, process.env.SECRET, { expiresIn: "1d" });
+
+  res.status(200);
+  return res.send({
+    success: true,
+    message: "Logged in",
+    token: "Bearer " + token,
+  });
+});
 export const signout = asyncHandler(async (req, res, next) => {});
 
 export const getPost = asyncHandler(async (req, res, next) => {
   try {
     const post = await Post.findOne(
       { _id: req.params.postId },
-      "title posted edited",
+      "title description content published",
     ).exec();
 
     res.json(post);
@@ -20,30 +56,61 @@ export const getPost = asyncHandler(async (req, res, next) => {
 
 export const getPosts = asyncHandler(async (req, res, next) => {
   try {
-    const posts = await Post.find({}, "title posted edited")
+    const posts = await Post.find({}, "title posted edited description")
       .sort({ edited: -1 })
       .exec();
 
+    res.status(200);
     res.json(posts);
   } catch (error) {
+    res.status(400);
     res.json(error);
   }
 });
 
-//TODO
-//TODO
-//TODO: Add post request body validation here, make it usable for both update and create routes.
-//TODO
-//TODO
-export const validatePostBody = [asyncHandler(async (req, res, next) => {})];
+export const validatePostBody = [
+  body("title")
+    .trim()
+    .notEmpty()
+    .withMessage("Title can not be empty")
+    .escape()
+    .isLength({ min: 2, max: 124 })
+    .withMessage("Title must be between 2-124 characters"),
+  body("description")
+    .trim()
+    .notEmpty()
+    .withMessage("Description can not be empty")
+    .escape()
+    .isLength({ min: 100, max: 200 })
+    .withMessage("Description must be between 100-200 characters"),
+  body("content").notEmpty().withMessage("Post content can not be empty"),
+  body("published")
+    .isBoolean()
+    .withMessage("You have to select how you want to save this article")
+    .notEmpty()
+    .withMessage("You have to select how you want to save this article"),
+
+  asyncHandler(async (req, res, next) => {
+    const validationErrors = validationResult(req).array();
+
+    if (validationErrors.length > 0) {
+      res.status(400);
+      res.json(validationErrors);
+    } else {
+      return next();
+    }
+  }),
+];
 
 export const createPost = asyncHandler(async (req, res, next) => {
   try {
     const post = new Post({ ...req.body });
     await post.save();
 
+    res.status(200);
     res.json({ post });
   } catch (error) {
+    res.status(400);
     res.json(error);
   }
 });
@@ -64,6 +131,7 @@ export const editPost = asyncHandler(async (req, res, next) => {
 });
 
 export const deletePost = asyncHandler(async (req, res, next) => {
+  console.log(req.params.id);
   try {
     await Post.findOneAndDelete({ _id: req.params.postId }).exec();
 

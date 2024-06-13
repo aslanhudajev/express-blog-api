@@ -1,8 +1,12 @@
 import express, { urlencoded } from "express";
 import mongoose from "mongoose";
 import "dotenv/config";
+import cors from "cors";
+import passport from "passport";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 
 import rootRouter from "./routes/root.js";
+import User from "./models/user.js";
 
 await mongoose
   .connect(process.env.MDB, { dbName: process.env.DB })
@@ -11,6 +15,25 @@ await mongoose
 
 const app = express();
 
+const jwtOpts = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.SECRET,
+};
+
+passport.use(
+  new JwtStrategy(jwtOpts, async (jwt_payload, done) => {
+    const user = await User.findOne({ _id: jwt_payload.id });
+
+    if (!user) {
+      return done(null, false);
+    } else {
+      return done(null, user);
+    }
+  }),
+);
+
+app.use(cors());
+app.use(passport.initialize());
 app.use(express.static("./public"));
 app.use(urlencoded({ extended: false }));
 app.use(express.json());

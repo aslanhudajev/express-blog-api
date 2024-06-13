@@ -6,7 +6,7 @@ export const getPost = asyncHandler(async (req, res, next) => {
   try {
     const post = await Post.findOne(
       { _id: req.params.postId, published: true },
-      "title posted edited",
+      "title posted edited content",
     )
       .populate("user", "username")
       .exec();
@@ -21,7 +21,7 @@ export const getPosts = asyncHandler(async (req, res, next) => {
   try {
     const posts = await Post.find(
       { published: true },
-      "title user posted edited",
+      "title description posted edited",
     )
       .sort({ edited: -1 })
       .populate("user", "username")

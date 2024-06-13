@@ -38,6 +38,11 @@ router.get(
 
 //Update
 router.post(
+  "/edit/password",
+  passport.authenticate("jwt", { session: false }),
+  dashboardController.editPassword,
+);
+router.post(
   "/edit/:postId",
   passport.authenticate("jwt", { session: false }),
   dashboardController.validatePostBody,

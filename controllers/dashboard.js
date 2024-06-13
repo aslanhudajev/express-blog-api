@@ -4,6 +4,7 @@ import "dotenv/config.js";
 import jwt from "jsonwebtoken";
 import Post from "../models/post.js";
 import User from "../models/user.js";
+import bcrypt from "bcrypt";
 
 export const signin = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ username: req.body.username });
@@ -16,8 +17,8 @@ export const signin = asyncHandler(async (req, res, next) => {
     });
   }
 
-  //!TODO Implement bcrypt hash to passwords
-  if (user.password !== req.body.password) {
+  const match = await bcrypt.compare(req.body.password, user.password);
+  if (!match) {
     res.status(400);
     return res.send({
       success: false,
@@ -124,6 +125,27 @@ export const editPost = asyncHandler(async (req, res, next) => {
 
     res.status(200);
     res.json(200);
+  } catch (error) {
+    res.status(400);
+    res.json(error);
+  }
+});
+
+export const editPassword = asyncHandler(async (req, res, next) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    const user = await User.findOneAndUpdate(
+      { username: "admin" },
+      { password: hashedPassword },
+    );
+    res.status(200);
+    res.json({
+      username: user.username,
+      password: hashedPassword,
+      status: 200,
+      msg: "Password has been changed",
+    });
   } catch (error) {
     res.status(400);
     res.json(error);

@@ -132,6 +132,25 @@ export const editPost = asyncHandler(async (req, res, next) => {
 });
 
 export const editPassword = asyncHandler(async (req, res, next) => {
+  console.log(req.body);
+  if (req.body.current === "") {
+    res.status(400);
+    return res.send({
+      success: false,
+      message: "Current password empty",
+    });
+  }
+
+  const user = await User.findOne({ username: "admin" }).exec();
+  const match = await bcrypt.compare(req.body.current, user.password);
+  if (!match) {
+    res.status(400);
+    return res.send({
+      success: false,
+      message: "Current password is incorrect",
+    });
+  }
+
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 

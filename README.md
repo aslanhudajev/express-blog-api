@@ -1,11 +1,12 @@
 # Express Blog API
 
 This is a part of an assignment from The Odin Project (top).
-The assignment was to build a backend API with two different front-ends, on for the end-user (blog reader) and one for the admin (the blog writer).
+The assignment was to build a backend API with two different front-ends, one for the end-user (blog reader) and one for the admin (the blog writer).
 
-This specific repository is for the backend API. Here are the repositories for the tw front ends:
-[End User Front-end](https://github.com/aslanhudajev/express-blog-front)
-[Administrator Front-end](https://github.com/aslanhudajev/express-blog-dashboard)
+This specific repository is for the backend API. Here are the repositories for the two front ends:
+
+- [End User Front-end](https://github.com/aslanhudajev/express-blog-front)
+- [Administrator Front-end](https://github.com/aslanhudajev/express-blog-dashboard)
 
 ## Built with
 

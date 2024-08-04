@@ -1,9 +1,9 @@
+import "dotenv/config";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import express, { urlencoded } from "express";
 import mongoose from "mongoose";
-import "dotenv/config";
-import cors from "cors";
 import passport from "passport";
-import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import cors from "cors";
 
 import rootRouter from "./routes/root.js";
 import User from "./models/user.js";

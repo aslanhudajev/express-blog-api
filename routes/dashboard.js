@@ -1,6 +1,7 @@
-import express from "express";
-import passport from "passport";
 import * as dashboardController from "../controllers/dashboard.js";
+import passport from "passport";
+import express from "express";
+
 const router = express.Router();
 
 //Authentication
